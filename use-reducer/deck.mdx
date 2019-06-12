@@ -1,0 +1,23 @@
+# useReducer
+
+### Complex State Without Redux
+
+---
+
+useState()
+
+---
+
+```jsx
+const MyComponent = props => {
+  const [state, setState] = useState();
+
+  return (
+    <div>
+      <h1>Hello {state}!</h1>
+      <button onClick={() => setState('Adam')}>Adam</button>
+      <button onClick={() => setState('World')}>World</button>
+    </div>
+  );
+};
+```
