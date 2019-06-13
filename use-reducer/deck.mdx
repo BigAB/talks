@@ -1,23 +1,749 @@
+import { Notes } from 'mdx-deck';
+import { Head, Image, Appear } from 'mdx-deck';
+import { CodeSurfer, components } from 'mdx-deck-code-surfer';
+import Highlight, { defaultProps } from 'prism-react-renderer';
+import {
+  mytheme,
+  BGImage,
+  Split,
+  Split2,
+  SpecialText,
+  Counter,
+  Reasons
+} from './src';
+import dracula from 'prism-react-renderer/themes/dracula';
+export const theme = {
+  ...mytheme,
+  codeSurfer: {
+    ...dracula,
+    showNumbers: false
+  }
+};
+
+<Head>
+  <title>useReducer()</title>
+  <link
+    href="https://fonts.googleapis.com/css?family=Permanent+Marker&display=swap"
+    rel="stylesheet"
+  />
+</Head>
+
 # useReducer
 
 ### Complex State Without Redux
 
+<div style={{ height: '3em' }} />
+
+<Notes>
+  <ul>
+    <li>I named this talk before really getting into it...</li>
+  </ul>
+</Notes>
+
 ---
 
-useState()
+# useReducer
+
+### <del>Complex State Without Redux</del>
+
+<SpecialText
+  style={{
+    transform: `skew(-3deg, -2deg) translateY(-2.5em)`,
+    fontSize: '2em'
+  }}
+>
+  The other state hook for React
+</SpecialText>
+
+<Notes>
+  <ul>
+    <li>Because there are trade-offs</li>
+  </ul>
+</Notes>
 
 ---
 
-```jsx
+## useState()
+
+<Notes>
+  <ul>
+    <li>We've been doing a little series of React hooks...</li>
+    <li>In the first one, I covered useState...</li>
+  </ul>
+</Notes>
+
+---
+
+<CodeSurfer
+  title="useState()"
+  code={`
 const MyComponent = props => {
-  const [state, setState] = useState();
-
-  return (
-    <div>
-      <h1>Hello {state}!</h1>
-      <button onClick={() => setState('Adam')}>Adam</button>
-      <button onClick={() => setState('World')}>World</button>
-    </div>
-  );
+  
+  const [state, setState] = useState(defaultState);
+  
+  return (<div>{state}</div>);
 };
-```
+  `}
+  steps={[{}, { lines: [4], notes: 'Quick API Recap' }]}
+/>
+
+<Notes>
+  <ul>
+    <li>
+      The way to add state to your function components
+      <br />
+      <br />
+      <br />
+    </li>
+    <li>
+      <b>mention destructuring</b>
+      <br />
+      <br />
+      <br />
+    </li>
+    <li>
+      ...There is another hook, used to store state in your function components
+      <br />
+      <br />
+      <br />
+    </li>
+    <li>...You may have guessed by the title of the talk</li>
+  </ul>
+</Notes>
+
+---
+
+## useReducer()
+
+---
+
+<CodeSurfer
+  title="useReducer()"
+  code={`
+const MyComponent = props => {
+  
+  const [state, dispatch] = useReducer(reducer, initialState);
+  
+  return (<div>{state}</div>);
+};
+  `}
+  steps={[
+    {},
+    { lines: [4] },
+    { tokens: { 4: [1, 2, 3, 4, 5, 6, 7] } },
+    {
+      tokens: { 4: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] }
+    }
+  ]}
+/>
+
+---
+
+<CodeSurfer
+  title="The Reducer"
+  code={`
+    function counter(state, action) {
+      switch (action.type) {
+        case 'INCREMENT':
+          return state + 1
+        case 'DECREMENT':
+          return state - 1
+        default:
+          return state
+      }
+    }
+  `}
+  steps={[
+    {},
+    { tokens: { 2: [5] } },
+    {
+      tokens: { 2: [7] }
+    },
+    {
+      lines: [5, 7, 9]
+    },
+    {}
+  ]}
+/>
+
+<Notes>
+
+- Familiar redux pattern
+- get previous/initial state - dispatched action - return new state
+- like the function you pass to the reducer method of an array
+- **This is SYNCHRONOUS**
+
+</Notes>
+
+---
+
+export default Split2;
+
+<Counter simple key="counter" />
+
+<Highlight
+  {...defaultProps}
+  code={require('!raw-loader!./snippets/simple-counter.js')}
+  language={'jsx'}
+>
+  {({ className, style, tokens, getLineProps, getTokenProps }) => (
+    <pre className={className + ` hack`} style={style}>
+      {tokens.map((line, i) => (
+        <div {...getLineProps({ line, key: i })}>
+          {line.map((token, key) => (
+            <span {...getTokenProps({ token, key })} />
+          ))}
+        </div>
+      ))}
+    </pre>
+  )}
+</Highlight>
+
+---
+
+<CodeSurfer
+  code={`
+const MyComponent = props => {
+  
+  const [state, dispatch] = useReducer(reducer, initialState, init);
+  
+  return (<div>{state}</div>);
+};
+  `}
+  steps={[
+    {
+      tokens: { 4: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] },
+      notes: 'Optional init() function'
+    },
+    { tokens: { 4: [17] }, notes: 'Optional init() function' }
+  ]}
+/>
+
+<Notes>
+  <ul>
+    <li>...just for the sake of completness</li>
+    <li>use Reducer can take a 3rd argument</li>
+  </ul>
+</Notes>
+
+---
+
+<CodeSurfer
+  code={`
+    const init = (initialState) => {
+      return { count: initialState };
+    }
+  `}
+  steps={[{ notes: 'Lazy initialization' }]}
+/>
+
+<Notes>
+  takes the initial state as an arg, and returns the actual initial state
+</Notes>
+
+---
+
+<CodeSurfer
+  code={`
+    const init = (initialState) => {
+      return { count: initialState };
+    }
+    
+    const reducer = (state, action) => {
+      switch (action.type) {
+        case 'increment':
+          return {count: state.count + 1};
+        case 'decrement':
+          return {count: state.count - 1};
+        case 'reset':
+          return init(action.payload);
+        default:
+          throw new Error();
+      }
+    }
+    
+    const Counter = ({initialCount}) => {
+        const [state, dispatch] = useReducer(reducer, initialCount, init);
+        return (
+          <>
+            Count: {state.count}
+            <button
+              onClick={() => dispatch({type: 'reset', payload: initialCount})}>
+              
+              Reset
+            </button>
+            <button onClick={() => dispatch({type: 'increment'})}>+</button>
+            <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+          </>
+        );
+    }
+`}
+  steps={[
+    { notes: 'Lazy initialization' },
+    { lines: [2, 3, 4, 13, 20], notes: 'Lazy initialization' }
+  ]}
+/>
+
+<Notes>
+  <ul>
+    <li>React Docs have a good example</li>
+  </ul>
+</Notes>
+---
+
+export default Split2;
+
+<Counter />
+
+<Highlight
+  {...defaultProps}
+  code={require('!raw-loader!./snippets/counter.js')}
+  language={'jsx'}
+>
+  {({ className, style, tokens, getLineProps, getTokenProps }) => (
+    <pre className={className + ` hack`} style={style}>
+      {tokens.map((line, i) => (
+        <div {...getLineProps({ line, key: i })}>
+          {line.map((token, key) => (
+            <span {...getTokenProps({ token, key })} />
+          ))}
+        </div>
+      ))}
+    </pre>
+  )}
+</Highlight>
+
+---
+
+export default Split;
+
+<div style={{ padding: '3em' }}>
+  <img src="./images/redux.svg" />
+</div>
+
+### It's Not Redux
+
+---
+
+<CodeSurfer
+  title="Dispatching Actions"
+  code={`
+  <User onClick={() => 
+    dispatch({ type: ACTIVATE_USER, payload: user.id })
+  }>
+    {user.name}
+  </User>
+  `}
+  steps={[
+    {},
+    {
+      tokens: { 3: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] },
+      notes: 'Standard Redux Actions'
+    }
+  ]}
+/>
+
+<Notes>
+  <ul>
+    <li>
+      The convention in Redux is to have these{' '}
+      <p>
+        <b>Standard Actions</b>
+      </p>
+    </li>
+    <li>
+      Serializable
+      <br />
+      <br />
+      <br />
+    </li>
+    <li>Sometimes has `meta`</li>
+  </ul>
+</Notes>
+
+---
+
+<CodeSurfer
+  title="Dispatching Actions"
+  code={`
+  <User onClick={() => 
+    dispatch([ACTIVATE_USER, user])
+  }>
+    {user.name}
+  </User>
+  `}
+  steps={[
+    {
+      tokens: { 3: [3, 4, 5, 6, 7] },
+      notes: 'Anything you want'
+    }
+  ]}
+/>
+
+---
+
+<CodeSurfer
+  title="Dispatching Actions"
+  code={`
+  <User onClick={ () => dispatch(user) }>
+    {user.name}
+  </User>
+  `}
+  steps={[
+    {
+      tokens: { 2: [15] },
+      notes: 'Anything you want'
+    },
+    {}
+  ]}
+/>
+
+<Notes>
+  <ul>
+    <li>If your reducer was switching on types...</li>
+    <li>...just pass the user</li>
+  </ul>
+</Notes>
+
+---
+
+**Why would you want to use**
+
+`useReducer()`
+
+**over**
+
+`useState()`?
+
+<Notes>
+  <ul>
+    <li>If your reducer was switching on types...</li>
+    <li>...just pass the user</li>
+  </ul>
+</Notes>
+
+<br /><br /><br /><br /><br />
+
+---
+
+export default Split;
+
+<SpecialText>Myths</SpecialText>
+
+<ul>
+  <Appear>
+    <li>
+      <span>Dependent state</span>
+      <Notes>
+        Updater function passed to `setState` alleviates most of this
+      </Notes>
+    </li>
+  </Appear>
+  <li hidden>When using `Context`</li>
+  <li hidden>Complex State ...?</li>
+</ul>
+
+---
+
+<CodeSurfer
+  title="Counter Reducer"
+  code={require('!raw-loader!./snippets/dep-reducer.js')}
+/>
+
+---
+
+<CodeSurfer
+  title="useState Updater"
+  code={require('!raw-loader!./snippets/updater.js')}
+  steps={[
+    {},
+    {
+      lines: [2],
+      tokens: {
+        6: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        7: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+      },
+      notes: 'Just as simple'
+    }
+  ]}
+/>
+
+---
+
+export default Split;
+
+<SpecialText>Myths</SpecialText>
+
+<ul>
+  <li>Dependent state</li>
+  <Appear>
+    <li>When using `Context`</li>
+  </Appear>
+  <li hidden>Complex State ...?</li>
+</ul>
+
+---
+
+<CodeSurfer
+  title="With Context"
+  code={require('!raw-loader!./snippets/context-exp.js')}
+/>
+
+---
+
+<CodeSurfer
+  title="With Context"
+  code={require('!raw-loader!./snippets/context-exp.2.js')}
+/>
+
+---
+
+<CodeSurfer
+  title="With Context"
+  code={require('!raw-loader!./snippets/context-exp.3.js')}
+  steps={[
+    {
+      notes: 'With useState()'
+    }
+  ]}
+/>
+
+---
+
+<CodeSurfer
+  title="With Context"
+  code={require('!raw-loader!./snippets/context-exp.4.js')}
+  steps={[
+    {
+      notes: 'Even Better!'
+    }
+  ]}
+/>
+
+---
+
+export default Split;
+
+<SpecialText>Myths</SpecialText>
+
+<ul>
+  <li>Dependent state</li>
+  <li>When using `Context`</li>
+  <Appear>
+    <li>
+      Complex State ...?
+      <Notes>Complexity is a relative term</Notes>
+    </li>
+  </Appear>
+</ul>
+
+---
+
+<CodeSurfer
+  title="Complex State Reducer"
+  code={require('!raw-loader!./snippets/todo-reducer.js')}
+/>
+
+<Notes>Classic todos</Notes>
+
+---
+
+<CodeSurfer
+  title="Complex State Reducer"
+  code={require('!raw-loader!./snippets/todo-set-state.js')}
+/>
+
+<Notes>
+
+- Nothing inherently simpler
+- These couls all be memoized with useCallback
+
+</Notes>
+
+---
+
+export default Split;
+
+<Reasons />
+
+<ul>
+  <Appear>
+    <li>Decouple the UI from the logic</li>
+  </Appear>
+  <li hidden>Good for a unit test</li>
+  <li hidden>Referential Equality of `dispatch`</li>
+</ul>
+
+---
+
+<CodeSurfer code={require('!raw-loader!./snippets/simple-counter.js')} />
+
+<Notes>
+
+- use reducer on of the few built in hooks that lets you out of react components
+- JSX code is clean, easy to read and not cluttered with the logic
+- UI code really only cares about rendering and dispatching actions
+
+</Notes>
+
+---
+
+export default Split;
+
+<Reasons />
+
+<ul>
+  <li>Decouple the UI from the logic</li>
+  <Appear>
+    <li>Good for a unit test</li>
+  </Appear>
+  <li hidden>Referential Equality of `dispatch`</li>
+</ul>
+
+---
+
+<CodeSurfer
+  title="Todo Reducer"
+  code={require('!raw-loader!./snippets/todo-reducer.js')}
+  steps={[
+    {
+      notes: 'Easy to test'
+    }
+  ]}
+/>
+
+<Notes>
+
+- you can export your reducer and just test it directly
+- it's a pure function, nothing could be easier
+- without adding the complications of having it attached to UI
+- Just unit tests, not integration, but...
+
+</Notes>
+
+---
+
+export default Split;
+
+<Reasons />
+
+<ul>
+  <li>Decouple the UI from the logic</li>
+  <li>Good for a unit test</li>
+  <Appear>
+    <li>
+      Referential Equality of <code>dispatch()</code>
+    </li>
+  </Appear>
+</ul>
+
+---
+
+export default Split;
+
+<figure className="profile">
+  <img style={{ maxHeight: '50vh' }} src="./images/dan-abramov.jpeg" />
+  <h4>Dan Abramov</h4>
+  <a href="https://github.com/facebook/react/issues/14099#issuecomment-436647120">
+    on github.com
+  </a>
+</figure>
+
+<div className="small">
+
+`useCallback` lets you memoize the callback to avoid a different function being passed down every time.
+
+But you have to specify everything it _depends on in the second array argument_.
+
+If it's something from props or state, your callback might get invalidated too often.
+
+`useReducer` doesn't suffer from this issue.
+
+The `dispatch` function it gives you will stay the same between re-renders even if the reducer itself closes over props and state.
+
+This works because the reducer runs _during the next render_ (and thus has natural ability to read props and state)
+
+</div>
+
+---
+
+<CodeSurfer
+  code={require('!raw-loader!./snippets/ref-equiv.js')}
+  steps={[
+    {},
+    {
+      tokens: { 1: [10], 8: [10], 11: [4] }
+    },
+    {
+      tokens: { 4: [2], 15: [8] }
+    },
+    {}
+  ]}
+/>
+
+<Notes>
+
+- I don't expect you to **GET THIS**, but maybe...
+- When you are building an app, this probably doesn't matter
+- but a shared or OS library, to be used by others...
+
+</Notes>
+
+---
+
+<CodeSurfer
+  code={require('!raw-loader!./snippets/ref-equiv.2.js')}
+  steps={[
+    {},
+    {
+      tokens: { 1: [10], 6: [14] }
+    },
+    {
+      tokens: { 2: [6], 13: [8] }
+    },
+    {}
+  ]}
+/>
+
+<Notes>
+
+- AGAIN I don't expect you to **GET THIS**, but maybe...
+
+</Notes>
+
+---
+
+## What did we learn?
+
+<ul className="tight">
+  <Appear>
+    <li>
+      <code>useReducer()</code> is like set state, but you dispatch actions into
+      a reducer
+    </li>
+    <li>...is for local component state and is Synchronous</li>
+    <li>...is a little more boilerplate with actions and reducers</li>
+    <li>...allows you to cleanly separate UI from state behaviour</li>
+    <li>...can be easier for unit tesing complex state</li>
+    <li>
+      ...retains the reference for <code>dispatch()</code> even when it depends
+      on props or state, which can be good for performance
+    </li>
+  </Appear>
+</ul>
+
+<h1>&nbsp;</h1>
+
+---
+
+export default Split;
+
+<figure>
+  <img style={{ maxHeight: '50vh' }} src="./images/bitovi-logo.webp" />
+  <h4>React Consulting</h4>
+  <a href="https://www.bitovi.com/frontend-javascript-consulting/react-consulting">
+    bitovi.com/frontend-javascript-consulting/react-consulting
+  </a>
+</figure>
+
+## Questions?
